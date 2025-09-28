@@ -1,64 +1,134 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import LoginSignup from './components/LoginSignup'
 import Dashboard from './components/Dashboard'
 import ChatInterface from './components/ChatInterface'
-import ChatHistory from './components/ChatHistory'
 import About from './components/About'
 import PatternDiscovery from './components/PatternDiscovery'
 import Navigation from './components/Navigation'
 
-function App() {
-  const [currentView, setCurrentView] = useState('login')
+function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(null)
+  const location = useLocation()
+
+  // Check for stored authentication on page load
+  useEffect(() => {
+    const storedUser = localStorage.getItem('floatchat_user')
+    const storedAuth = localStorage.getItem('floatchat_authenticated')
+    
+    if (storedUser && storedAuth === 'true') {
+      try {
+        const userData = JSON.parse(storedUser)
+        setUser(userData)
+        setIsAuthenticated(true)
+      } catch (error) {
+        // If there's an error parsing stored data, clear it
+        localStorage.removeItem('floatchat_user')
+        localStorage.removeItem('floatchat_authenticated')
+      }
+    }
+  }, [])
 
   const handleLogin = (userData) => {
     setUser(userData)
     setIsAuthenticated(true)
-    setCurrentView('dashboard')
+    
+    // Store authentication data
+    localStorage.setItem('floatchat_user', JSON.stringify(userData))
+    localStorage.setItem('floatchat_authenticated', 'true')
   }
 
   const handleLogout = () => {
     setUser(null)
     setIsAuthenticated(false)
-    setCurrentView('login')
+    
+    // Clear stored authentication data
+    localStorage.removeItem('floatchat_user')
+    localStorage.removeItem('floatchat_authenticated')
+    localStorage.removeItem('floatchat_remembered_email')
+    localStorage.removeItem('floatchat_remembered_password')
   }
 
-  const renderCurrentView = () => {
-    if (!isAuthenticated) {
-      return <LoginSignup onLogin={handleLogin} />
-    }
+  // Protected Route Component
+  const ProtectedRoute = ({ children }) => {
+    return isAuthenticated ? children : <Navigate to="/login" replace />
+  }
 
-    switch (currentView) {
-      case 'dashboard':
-        return <Dashboard user={user} />
-      case 'chat':
-        return <ChatInterface user={user} />
-      case 'history':
-        return <ChatHistory user={user} />
-      case 'about':
-        return <About />
-      case 'patterns':
-        return <PatternDiscovery user={user} />
-      default:
-        return <Dashboard user={user} />
-    }
+  // Public Route Component (redirect to chat if already authenticated)
+  const PublicRoute = ({ children }) => {
+    return !isAuthenticated ? children : <Navigate to="/" replace />
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {isAuthenticated && (
+      {isAuthenticated && location.pathname !== '/' && location.pathname !== '/dashboard' && (
         <Navigation 
-          currentView={currentView} 
-          onViewChange={setCurrentView}
+          currentView={location.pathname} 
           onLogout={handleLogout}
           user={user}
         />
       )}
-      <main className={isAuthenticated ? 'pt-16' : ''}>
-        {renderCurrentView()}
+      <main className={isAuthenticated && location.pathname !== '/' && location.pathname !== '/dashboard' ? 'pt-16' : ''}>
+        <Routes>
+          {/* Public Routes */}
+          <Route 
+            path="/login" 
+            element={
+              <PublicRoute>
+                <LoginSignup onLogin={handleLogin} />
+              </PublicRoute>
+            } 
+          />
+          
+          {/* Protected Routes */}
+          <Route 
+            path="/" 
+            element={
+              <ProtectedRoute>
+                <ChatInterface user={user} />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard user={user} />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/about" 
+            element={
+              <ProtectedRoute>
+                <About />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/patterns" 
+            element={
+              <ProtectedRoute>
+                <PatternDiscovery user={user} />
+              </ProtectedRoute>
+            } 
+          />
+          
+          {/* Default redirects */}
+          <Route path="/login" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
     </div>
+  )
+}
+
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
   )
 }
 

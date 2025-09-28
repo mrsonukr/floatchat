@@ -1,14 +1,16 @@
 import { useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
-const Navigation = ({ currentView, onViewChange, onLogout, user }) => {
+const Navigation = ({ onLogout, user }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const location = useLocation()
 
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
-    { id: 'chat', label: 'Chat', icon: '💬' },
-    { id: 'history', label: 'History', icon: '📚' },
-    { id: 'patterns', label: 'Patterns', icon: '🔍' },
-    { id: 'about', label: 'About', icon: 'ℹ️' }
+    { id: 'chat', label: 'Chat', icon: '💬', path: '/' },
+    { id: 'dashboard', label: 'Dashboard', icon: '🏠', path: '/dashboard' },
+    { id: 'history', label: 'History', icon: '📚', path: '/history' },
+    { id: 'patterns', label: 'Patterns', icon: '🔍', path: '/patterns' },
+    { id: 'about', label: 'About', icon: 'ℹ️', path: '/about' }
   ]
 
   return (
@@ -26,18 +28,18 @@ const Navigation = ({ currentView, onViewChange, onLogout, user }) => {
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               {navItems.map((item) => (
-                <button
+                <Link
                   key={item.id}
-                  onClick={() => onViewChange(item.id)}
+                  to={item.path}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    currentView === item.id
+                    location.pathname === item.path
                       ? 'bg-blue-100 text-blue-700'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
                   <span className="mr-1">{item.icon}</span>
                   {item.label}
-                </button>
+                </Link>
               ))}
             </div>
           </div>
@@ -96,21 +98,19 @@ const Navigation = ({ currentView, onViewChange, onLogout, user }) => {
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-white border-t">
             {navItems.map((item) => (
-              <button
+              <Link
                 key={item.id}
-                onClick={() => {
-                  onViewChange(item.id)
-                  setIsMobileMenuOpen(false)
-                }}
+                to={item.path}
+                onClick={() => setIsMobileMenuOpen(false)}
                 className={`block w-full text-left px-3 py-2 rounded-md text-base font-medium transition-colors ${
-                  currentView === item.id
+                  location.pathname === item.path
                     ? 'bg-blue-100 text-blue-700'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
                 <span className="mr-2">{item.icon}</span>
                 {item.label}
-              </button>
+              </Link>
             ))}
             <div className="border-t pt-3 mt-3">
               <div className="px-3 py-2 text-sm text-gray-700">

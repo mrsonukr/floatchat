@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const LoginSignup = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true)
@@ -6,15 +6,31 @@ const LoginSignup = ({ onLogin }) => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    rememberMe: false
   })
   const [isLoading, setIsLoading] = useState(false)
 
+  // Load remembered credentials on component mount
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem('floatchat_remembered_email')
+    const rememberedPassword = localStorage.getItem('floatchat_remembered_password')
+    
+    if (rememberedEmail && rememberedPassword) {
+      setFormData(prev => ({
+        ...prev,
+        email: rememberedEmail,
+        password: rememberedPassword,
+        rememberMe: true
+      }))
+    }
+  }, [])
+
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value, type, checked } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: type === 'checkbox' ? checked : value
     }))
   }
 
@@ -28,8 +44,20 @@ const LoginSignup = ({ onLogin }) => {
         id: Date.now(),
         name: formData.name,
         email: formData.email,
-        joinDate: new Date().toISOString()
+        joinDate: new Date().toISOString(),
+        rememberMe: formData.rememberMe
       }
+      
+      // Store login credentials if remember me is checked
+      if (formData.rememberMe && isLogin) {
+        localStorage.setItem('floatchat_remembered_email', formData.email)
+        localStorage.setItem('floatchat_remembered_password', formData.password)
+      } else if (!formData.rememberMe) {
+        // Clear stored credentials if remember me is unchecked
+        localStorage.removeItem('floatchat_remembered_email')
+        localStorage.removeItem('floatchat_remembered_password')
+      }
+      
       onLogin(userData)
       setIsLoading(false)
     }, 1000)
@@ -41,7 +69,8 @@ const LoginSignup = ({ onLogin }) => {
       name: '',
       email: '',
       password: '',
-      confirmPassword: ''
+      confirmPassword: '',
+      rememberMe: false
     })
   }
 
@@ -145,8 +174,10 @@ const LoginSignup = ({ onLogin }) => {
               <div className="flex items-center">
                 <input
                   id="remember-me"
-                  name="remember-me"
+                  name="rememberMe"
                   type="checkbox"
+                  checked={formData.rememberMe}
+                  onChange={handleInputChange}
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
