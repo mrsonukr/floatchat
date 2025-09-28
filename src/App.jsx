@@ -5,11 +5,11 @@ import Dashboard from './components/Dashboard'
 import ChatInterface from './components/ChatInterface'
 import About from './components/About'
 import PatternDiscovery from './components/PatternDiscovery'
-import Navigation from './components/Navigation'
 
 function AppContent() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
   const location = useLocation()
 
   // Check for stored authentication on page load
@@ -28,6 +28,7 @@ function AppContent() {
         localStorage.removeItem('floatchat_authenticated')
       }
     }
+    setIsLoading(false)
   }, [])
 
   const handleLogin = (userData) => {
@@ -52,24 +53,27 @@ function AppContent() {
 
   // Protected Route Component
   const ProtectedRoute = ({ children }) => {
+    if (isLoading) {
+      return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    }
     return isAuthenticated ? children : <Navigate to="/login" replace />
   }
 
   // Public Route Component (redirect to chat if already authenticated)
   const PublicRoute = ({ children }) => {
+    if (isLoading) {
+      return <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-gray-600">Loading...</div>
+      </div>
+    }
     return !isAuthenticated ? children : <Navigate to="/" replace />
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {isAuthenticated && location.pathname !== '/' && location.pathname !== '/dashboard' && (
-        <Navigation 
-          currentView={location.pathname} 
-          onLogout={handleLogout}
-          user={user}
-        />
-      )}
-      <main className={isAuthenticated && location.pathname !== '/' && location.pathname !== '/dashboard' ? 'pt-16' : ''}>
+      <main>
         <Routes>
           {/* Public Routes */}
           <Route 
@@ -102,7 +106,7 @@ function AppContent() {
             path="/about" 
             element={
               <ProtectedRoute>
-                <About />
+                <About user={user} />
               </ProtectedRoute>
             } 
           />
