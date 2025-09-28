@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { ArrowUp, ThumbsUp, ThumbsDown, Copy, Check, Download } from 'lucide-react'
+import { ArrowUp, ThumbsUp, ThumbsDown, Copy, Check, Download, LogOut } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const ChatInterface = ({ user, onLogout }) => {
@@ -625,8 +625,9 @@ const ChatInterface = ({ user, onLogout }) => {
               </div>
               <button 
                 onClick={handleLogout}
-                className="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition-colors"
+                className="flex items-center text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-md transition-colors"
               >
+                <LogOut className="w-3 h-3 mr-1" />
                 Logout
               </button>
             </div>
