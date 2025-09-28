@@ -75,11 +75,13 @@ const LoginSignup = ({ onLogin }) => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-blue-100">
-            <span className="text-2xl">🤖</span>
+          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-gray-200">
+            <svg className="w-8 h-8 text-gray-900" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+            </svg>
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             {isLogin ? 'Sign in to FloatChat' : 'Create your account'}
@@ -88,7 +90,7 @@ const LoginSignup = ({ onLogin }) => {
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <button
               onClick={toggleMode}
-              className="font-medium text-blue-600 hover:text-blue-500"
+              className="font-medium text-gray-800 hover:text-gray-900"
             >
               {isLogin ? 'Sign up' : 'Sign in'}
             </button>
@@ -107,7 +109,7 @@ const LoginSignup = ({ onLogin }) => {
                   name="name"
                   type="text"
                   required={!isLogin}
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm"
                   placeholder="Full name"
                   value={formData.name}
                   onChange={handleInputChange}
@@ -126,7 +128,7 @@ const LoginSignup = ({ onLogin }) => {
                 required
                 className={`appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 ${
                   !isLogin ? 'rounded-none' : 'rounded-t-md'
-                } focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
+                } focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm`}
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleInputChange}
@@ -144,7 +146,7 @@ const LoginSignup = ({ onLogin }) => {
                 required
                 className={`appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 ${
                   !isLogin ? 'rounded-none' : 'rounded-b-md'
-                } focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm`}
+                } focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm`}
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleInputChange}
@@ -160,7 +162,7 @@ const LoginSignup = ({ onLogin }) => {
                   name="confirmPassword"
                   type="password"
                   required={!isLogin}
-                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                  className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-gray-500 focus:border-gray-500 focus:z-10 sm:text-sm"
                   placeholder="Confirm password"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
@@ -178,7 +180,7 @@ const LoginSignup = ({ onLogin }) => {
                   type="checkbox"
                   checked={formData.rememberMe}
                   onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="h-4 w-4 text-gray-600 focus:ring-gray-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                   Remember me
@@ -186,7 +188,7 @@ const LoginSignup = ({ onLogin }) => {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+                <a href="#" className="font-medium text-gray-600 hover:text-gray-800">
                   Forgot your password?
                 </a>
               </div>
@@ -197,7 +199,7 @@ const LoginSignup = ({ onLogin }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <div className="flex items-center">
@@ -220,7 +222,7 @@ const LoginSignup = ({ onLogin }) => {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-500">
+              <span className="px-2 bg-gray-50 text-gray-500">
                 Or continue with
               </span>
             </div>
@@ -239,9 +241,9 @@ const LoginSignup = ({ onLogin }) => {
 
             <button className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/>
               </svg>
-              <span className="ml-2">Twitter</span>
+              <span className="ml-2">Apple</span>
             </button>
           </div>
         </div>

@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { ArrowUp, ThumbsUp, ThumbsDown, Copy, Check, Download } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
-const ChatInterface = ({ user }) => {
+const ChatInterface = ({ user, onLogout }) => {
   const [messages, setMessages] = useState([])
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -151,6 +151,18 @@ const ChatInterface = ({ user }) => {
     setMessages(chatMessages[currentChatId] || [])
   }, [currentChatId, chatMessages])
 
+  const handleLogout = () => {
+    // Clear all local storage data
+    localStorage.removeItem('floatchat_chatHistory')
+    localStorage.removeItem('floatchat_currentChatId')
+    localStorage.removeItem('floatchat_chatMessages')
+    
+    // Call the logout function passed from parent
+    if (onLogout) {
+      onLogout()
+    }
+  }
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return
 
@@ -158,7 +170,13 @@ const ChatInterface = ({ user }) => {
       id: Date.now(),
       type: 'user',
       content: inputMessage.trim(),
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      files: uploadedFiles.length > 0 ? uploadedFiles.map(file => ({
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        url: URL.createObjectURL(file)
+      })) : []
     }
 
     // Update chat history if this is the first message in a blank chat
@@ -494,10 +512,11 @@ const ChatInterface = ({ user }) => {
         <div className="h-full flex flex-col">
           {/* Logo */}
           <div className="p-4">
-            <div className="w-8 h-8 bg-black rounded-sm flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            <div className="flex items-center">
+              <svg className="w-8 h-8 text-gray-900 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
               </svg>
+              <h1 className="text-xl font-semibold text-gray-900">FloatChat</h1>
             </div>
           </div>
 
@@ -604,15 +623,11 @@ const ChatInterface = ({ user }) => {
                   <div className="text-xs text-gray-500">Free</div>
                 </div>
               </div>
-              <button className="text-xs bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-md transition-colors">
-                Upgrade
-              </button>
-            </div>
-            <div className="mt-2 flex justify-end">
-              <button className="text-gray-500 hover:text-gray-700">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+              <button 
+                onClick={handleLogout}
+                className="text-xs bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md transition-colors"
+              >
+                Logout
               </button>
             </div>
           </div>
@@ -722,6 +737,50 @@ const ChatInterface = ({ user }) => {
                               <p className={`mb-0 ${message.type === 'user' ? 'bg-gray-100 px-3 py-2 rounded-lg' : ''}`}>
                                 {message.content}
                               </p>
+                              {/* Display attached files */}
+                              {message.files && message.files.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                  {message.files.map((file, index) => (
+                                    <div key={index} className="flex items-center bg-white border border-gray-200 rounded-lg p-2 shadow-sm">
+                                      {file.type.startsWith('image/') ? (
+                                        <img
+                                          src={file.url}
+                                          alt={file.name}
+                                          className="w-8 h-8 object-cover rounded mr-2"
+                                        />
+                                      ) : (
+                                        <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center mr-2">
+                                          {file.type.includes('pdf') ? (
+                                            <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                            </svg>
+                                          ) : file.type.includes('word') || file.type.includes('document') ? (
+                                            <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                          ) : file.type.includes('sheet') || file.type.includes('excel') ? (
+                                            <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                          ) : (
+                                            <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                          )}
+                                        </div>
+                                      )}
+                                      <div className="flex flex-col">
+                                        <span className="text-xs font-medium text-gray-900 truncate max-w-32">
+                                          {file.name}
+                                        </span>
+                                        <span className="text-xs text-gray-500">
+                                          {(file.size / 1024).toFixed(1)} KB
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                             {/* Action buttons for AI messages */}
                             {message.type === 'assistant' && message.content && !message.isTyping && (

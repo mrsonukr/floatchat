@@ -90,7 +90,7 @@ function AppContent() {
             path="/" 
             element={
               <ProtectedRoute>
-                <ChatInterface user={user} />
+                <ChatInterface user={user} onLogout={handleLogout} />
               </ProtectedRoute>
             } 
           />
